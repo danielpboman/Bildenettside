@@ -1,0 +1,19 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielpboman/Bildenettside.git"
+  },
+  "author": "Daniel Boman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danielpboman/Bildenettside/issues"
+  },
+  "homepage": "https://github.com/danielpboman/Bildenettside#readme"
+}
