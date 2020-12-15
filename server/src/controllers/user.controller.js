@@ -13,7 +13,6 @@ let UserController = {
         username: username.toLowerCase(),
       }).exec();
 
-      console.log(found);
       if (!found || found.length == 0) {
         console.log(`user ${username} not found.`);
         res
@@ -60,17 +59,29 @@ let UserController = {
     }
   },
   find: async (req, res) => {
-    let { search } = req.body;
+    let search = req.body.id;
     if (search === undefined) {
       search = req.params.id;
     }
+
+    if (search === undefined) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json("you need to include id in json body or in url");
+      return;
+    }
+
     try {
       let found = await UserModel.findOne(
         {
           _id: search,
         },
-        "id username admin"
-      ).exec();
+        "id username admin images"
+      )
+        .populate({
+          path: "images",
+        })
+        .exec();
       res.json(found);
     } catch (error) {
       console.error(error);
@@ -84,7 +95,6 @@ let UserController = {
       const found = await UserModel.find({
         username: username.toLowerCase(),
       }).exec();
-      console.log(found);
       if (found && found.length != 0) {
         res.status(StatusCodes.BAD_REQUEST).json("user already exists");
 

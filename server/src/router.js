@@ -52,11 +52,16 @@ const init = (app) => {
     await UserController.findAllImages(req, res);
   });
 
-  app.get("/i/:id", async (req, res) => {
+  app.get("/image/:id", async (req, res) => {
     await ImageController.getById(req, res);
   });
+
   app.get("/images", async (req, res) => {
     await ImageController.getAll(req, res);
+  });
+
+  app.post("/like/:id", jwtHelper.jwtMW, async (req, res) => {
+    await ImageController.likeImage(req, res);
   });
 
   const storage = multer({
