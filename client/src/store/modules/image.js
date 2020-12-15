@@ -27,20 +27,33 @@ const actions = {
 
     imageService.getImages().then(
       (data) => {
-        commit("setImages", data.data);
+        console.log(data.data.docs);
+        commit("setImages", data.data.docs);
         commit("loadingImages", false);
       },
       (error) => {
-        commit("loadingImages", false);
-
         console.error(error);
+        commit("loadingImages", false);
       }
     );
+  },
+  likeImage({ commit, state }, id) {
+    imageService.likeImage(id).then((data) => {
+      console.log(data);
+
+      let index = state.images.findIndex((x) => x._id == id);
+
+      if (index !== -1) {
+        let likes = state.images[index].likes;
+
+        likes = data.data.likes;
+      }
+    });
   },
   createImage({ commit }, file) {
     imageService.createImage(file).then(
       (data) => {
-        console.log(data.data);
+        console.log(data);
 
         router.push("/images");
       },

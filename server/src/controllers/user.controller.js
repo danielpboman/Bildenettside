@@ -8,6 +8,17 @@ const jwtHelper = require("../helpers/jwt");
 let UserController = {
   login: async (req, res) => {
     const { username, password } = req.body;
+
+    if (
+      username === undefined ||
+      password === undefined ||
+      username == "" ||
+      password == ""
+    ) {
+      res.status(StatusCodes.UNAUTHORIZED).json("username or password empty");
+      return;
+    }
+
     try {
       let found = await UserModel.findOne({
         username: username.toLowerCase(),
@@ -50,7 +61,12 @@ let UserController = {
       );
 
       res.cookie("identity", token);
-      res.status(StatusCodes.OK).json("logged in successfully");
+      res.status(StatusCodes.OK).json({
+        token: token,
+        username: found.username,
+        id: found._id,
+        scope: scope,
+      });
     } catch (error) {
       console.error(error);
       res

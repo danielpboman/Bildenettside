@@ -15,11 +15,10 @@ const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
 const mime = require("mime");
 const fs = require("fs");
-
-const IMAGE_PATH =
-  process.env.IMAGES_PATH === undefined ? "./images" : process.env.IMAGES_PATH;
+const IMAGE_PATH = require("./helpers/config").IMAGE_PATH;
 
 const init = (app) => {
+  console.log("IMAGE_PATH: " + IMAGE_PATH);
   if (!fs.existsSync(IMAGE_PATH)) {
     fs.mkdirSync(IMAGE_PATH);
   }
@@ -52,6 +51,9 @@ const init = (app) => {
     await UserController.findAllImages(req, res);
   });
 
+  app.get("/i/:id", async (req, res) => {
+    await ImageController.serveImage(req, res);
+  });
   app.get("/image/:id", async (req, res) => {
     await ImageController.getById(req, res);
   });

@@ -5,15 +5,13 @@ const jwtMW = exjwt({
   secret: secret,
   algorithms: ["HS256"],
   getToken: (req) => {
-   // console.log("cookies: " + req.cookies.identity);
-
-    if (req.cookies) {
-      return req.cookies.identity;
-    } else if (
+    if (
       req.headers.authorization &&
-      req.headers.authorization.split(" ")[0] === "Bearer"
+      req.headers.authorization.split(" ")[0] == "Bearer"
     ) {
       return req.headers.authorization.split(" ")[1];
+    } else if (req.cookies) {
+      return req.cookies.identity;
     }
   },
 });

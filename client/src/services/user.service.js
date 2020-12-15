@@ -8,28 +8,27 @@ export const userService = {
 };
 
 function login(user) {
-  let form = new FormData();
-  form.append("username", user["username"]);
-  form.append("password", user["password"]);
-
   return axios({
     method: "post",
-    url: `${config.baseURL}/api/account/login`,
-    data: form,
+    url: `${config.baseURL}/api/login`,
+    data: JSON.stringify(user),
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 }
 
 function logout() {
-  localStorage.removeItem("jwt");
+  localStorage.removeItem("identity");
 }
 
 function register(user) {
   return axios({
     method: "post",
     data: JSON.stringify(user),
-    url: `${config.baseURL}/api/account/register`,
+    url: `${config.baseURL}/api/register`,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 }

@@ -1,19 +1,21 @@
 <template>
-  <b-overlay :show="image.loadingImages">
+  <b-overlay :show="loading" class="d-flex images-padding">
     <b-container class="overflow-auto">
       <b-pagination
         v-model="currentPage"
         :total-rows="rows"
         :per-page="perPage"
+        class="justify-content-center"
       >
       </b-pagination>
 
-      <b-list-group v-for="img in getImagesForPage()" :key="img.id">
+      <b-list-group
+        v-for="img in getImagesForPage()"
+        :key="img._id"
+        class="d-flex justify-content-center"
+      >
         <b-list-group-item>
-          <b-img-lazy
-            :src="config.imagePath(img.id)"
-            style="max-width: 100%;"
-          />
+          <image-component :image="img"></image-component>
         </b-list-group-item>
       </b-list-group>
     </b-container>
@@ -23,12 +25,18 @@
 <script>
 import { mapState } from "vuex";
 import config from "../config";
+import ImageComponent from "./ImageComponent.vue";
 export default {
+  components: { ImageComponent },
   computed: {
-    ...mapState(["image"]),
     config: () => config,
     console: () => console,
-    rows: () => this.images.length,
+    rows() {
+      return this.images.length;
+    },
+    ...mapState({
+      loading: "image.loadingImages",
+    }),
   },
   mounted() {
     this.$store.watch(
@@ -43,6 +51,7 @@ export default {
       images: [],
       currentPage: 1,
       perPage: 5,
+      pages: 0,
     };
   },
   created() {
@@ -59,4 +68,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.images-padding {
+  padding-top: 100px;
+}
+</style>

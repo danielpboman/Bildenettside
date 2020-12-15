@@ -14,7 +14,7 @@ function getImages() {
   return axios({
     method: "get",
     url: `${config.baseURL}/api/images`,
-  }).then(handleResponse);
+  });
 
   //return axios.get(`${config.baseURL}/api/images`, {}).then(handleResponse);
 }
@@ -23,45 +23,40 @@ function getLikesForImage(id) {
   return axios({
     method: "get",
     url: `${config.baseURL}/api/image/likes?id=${id}`,
-  }).then(handleResponse);
+  });
 }
 
 function likeImage(id) {
   return axios({
     method: "post",
     headers: authHeader(),
-    url: `${config.baseURL}/api/auth/like?id=${id}`,
+    url: `${config.baseURL}/api/like/${id}`,
   });
 }
 
 function findImageById(id) {
   return axios({
     method: "get",
-    url: `${config.baseURL}/api/image?id=${id}`,
+    url: `${config.baseURL}/api/image/${id}`,
   });
 }
 
 function createImage(files) {
   let post = new FormData();
 
-  for (let file of files) {
-    console.log(file);
+  post.set("file", files);
 
-    if (file && file instanceof File) {
-      post.append("file[]", file);
-    }
-  }
+  let headers = {
+    "Content-Type": "multipart/form-data",
+    ...authHeader(),
+  };
 
   return axios({
     method: "post",
+    url: `${config.baseURL}/api/upload`,
     data: post,
-    headers: {
-      "Content-Type": "multipart/form-data",
-      ...authHeader(),
-    },
-  })
-    .then(handleResponse)
-    .then((id) => console.log("got id: " + id));
+    headers: headers,
+  }).then((id) => console.log(id));
 }
 
 function handleResponse(response) {

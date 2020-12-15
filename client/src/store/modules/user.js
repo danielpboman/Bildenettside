@@ -2,7 +2,8 @@ import { userService } from "../../services";
 import router from "../../router";
 
 const state = () => ({
-  user: localStorage.getItem("jwt"),
+  user: JSON.parse(localStorage.getItem("user")),
+  token: localStorage.getItem("identity"),
   loggingIn: false,
   registering: false,
 });
@@ -18,8 +19,9 @@ const actions = {
     userService.login(user).then(
       (login) => {
         commit("setLoggingIn", false);
-        commit("setUser", login.data.token);
-        router.push("/images")
+        commit("setUser", login.data);
+        console.log(login.data);
+        router.replace("/");
       },
       (error) => {
         console.error(error);
@@ -36,7 +38,6 @@ const actions = {
       (data) => {
         commit("setRegistering", false);
 
-        console.log(data);
         router.push("/login");
       },
       (error) => {
@@ -50,18 +51,31 @@ const mutations = {
   setLoggingIn(state, loggingIn) {
     state.loggingIn = loggingIn;
   },
-  setUser(state, user) {
-    state.user = user;
-    localStorage.setItem("jwt", user);
-
-    console.log("cookie: ", localStorage.getItem("jwt"));
+  setUser(state, login) {
+    if (!login) {
+      state.token = null;
+      state.user = null;
+      localStorage.removeItem("user");
+      localStorage.removeItem("identity");
+      return;
+    }
+    const { token, id, username, scope } = login;
+    state.token = token;
+    state.user = {
+      id: id,
+      username: username,
+      scope: scope,
+    };
+    localStorage.setItem("user", JSON.stringify(state.user));
+    localStorage.setItem("identity", token);
   },
   setRegistering(state, registering) {
     state.registering = registering;
   },
   logout(state) {
     state.user = null;
-    localStorage.removeItem("jwt");
+    state.token = null;
+    localStorage.removeItem("identity");
     router.push("/");
   },
 };

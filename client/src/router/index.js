@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
   const publicPages = ["/image", "/images", "/register", "/login"];
   const authReq = !publicPages.includes(to.path);
 
-  const loggedIn = localStorage.getItem("jwt");
+  const loggedIn = localStorage.getItem("identity");
 
   if (authReq && !loggedIn) {
     return next("/login");

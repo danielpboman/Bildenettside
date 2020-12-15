@@ -3,7 +3,7 @@ const config = {
 };
 
 config.imagePath = function(id) {
-  return `${config.baseURL}/api/image?id=${id}`;
+  return `${config.baseURL}/api/i/${id}`;
 };
 
 export default config;

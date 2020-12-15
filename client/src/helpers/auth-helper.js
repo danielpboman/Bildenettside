@@ -1,5 +1,5 @@
 export function authHeader() {
-  let token = localStorage.getItem("jwt");
+  let token = localStorage.getItem("identity");
 
   if (token) {
     return {

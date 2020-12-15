@@ -6,8 +6,7 @@ let UserModel = require("../models/user");
 
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
-const IMAGE_PATH =
-  process.env.IMAGES_PATH === undefined ? "./images" : process.env.IMAGES_PATH;
+const IMAGE_PATH = require("../helpers/config").IMAGE_PATH;
 
 let ImageController = {
   likeImage: async (req, res) => {
@@ -50,6 +49,31 @@ let ImageController = {
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.BAD_REQUEST).json(ReasonPhrases.BAD_REQUEST);
+    }
+  },
+  serveImage: async (req, res) => {
+    let search = req.body.id;
+
+    if (search === undefined) {
+      search = req.params.id;
+    }
+    if (search === undefined) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json("you need to include id in json body or in url");
+      return;
+    }
+    try {
+      let found = await ImageModel.findById(search).select("fileName");
+
+      res.sendFile(found.fileName, {
+        root: path.join("./", IMAGE_PATH),
+      });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send(`Could not find image by id ${search}`);
     }
   },
   getById: async (req, res) => {
@@ -102,14 +126,17 @@ let ImageController = {
       const result = await ImageModel.paginate(
         {},
         {
+          select: ["id", "likes", "author"],
           page: page,
           limit: limit,
           offset: offset,
+
           populate: [
             {
-              path: "images.likes.author",
-              select: ["id", "username", "admin"],
+              path: "likes",
+              select: "id username",
             },
+            { path: "author", select: "id username" },
           ],
         }
       );
@@ -133,7 +160,7 @@ let ImageController = {
     }
     try {
       const newImage = new ImageModel({
-        filePath: file.filename,
+        fileName: file.filename,
         author: req.user.id,
       });
       await newImage.save();

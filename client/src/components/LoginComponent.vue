@@ -1,6 +1,6 @@
 <template>
-  <b-container class="login-padding d-flex justify-content-center">
-    <b-overlay :show="user.loggingIn || !show || user.user != null">
+  <b-jumbotron class="login-padding mx-auto">
+    <b-overlay :show="user.loggingIn || !show || user.token != null">
       <b-form @submit="this.onSubmit" @reset="this.onReset">
         <b-form-group id="input-group-1" label="Brukernavn" label-for="input-1">
           <b-form-input
@@ -38,7 +38,7 @@
         >
       </b-form>
     </b-overlay>
-  </b-container>
+  </b-jumbotron>
 </template>
 
 <script>
@@ -88,8 +88,4 @@ export default {
 };
 </script>
 
-<style>
-.login-padding {
-  padding-top: 100px;
-}
-</style>
+<style></style>
