@@ -9,6 +9,40 @@ const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 const IMAGE_PATH = require("../helpers/config").IMAGE_PATH;
 
 let ImageController = {
+  dislikeImage: async (req, res) => {
+    let search = req.body.id;
+
+    if (search === undefined) {
+      search = req.params.id;
+    }
+    if (search === undefined) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send("you need to include id in json body or in url");
+      return;
+    }
+    let userId = req.user.id;
+
+    if (!userId) {
+      res.status(StatusCodes.UNAUTHORIZED).send("userid not provided");
+      return;
+    }
+
+    try {
+      let image = await ImageModel.findById(search).exec();
+      image.likes.pull({
+        _id: userId,
+      });
+
+      await image.save();
+
+      res.status(StatusCodes.OK).json(await ImageModel.findById(search).exec());
+    } catch (error) {
+      console.error(error);
+      res.status(StatusCodes.BAD_REQUEST).send(ReasonPhrases.BAD_REQUEST);
+    }
+  },
+
   likeImage: async (req, res) => {
     let search = req.body.id;
 
@@ -29,21 +63,13 @@ let ImageController = {
       return;
     }
     try {
-      await ImageModel.findOneAndUpdate(
-        {
-          _id: search,
-        },
-        {
-          $addToSet: {
-            likes: {
-              _id: userId,
-            },
-          },
-        },
-        {
-          useFindAndModify: false,
-        }
-      );
+      let image = await ImageModel.findById(search).exec();
+
+      image.likes.addToSet({
+        _id: userId,
+      });
+
+      await image.save();
 
       res.status(StatusCodes.OK).json(await ImageModel.findById(search).exec());
     } catch (error) {
@@ -89,15 +115,17 @@ let ImageController = {
       return;
     }
     try {
-      let found = await ImageModel.findById(search).populate([
-        {
-          path: "author",
-          select: ["id", "username"],
-        },
-        {
-          path: "images.likes",
-        },
-      ]);
+      let found = await ImageModel.findById(search)
+        .select(["id", "author", "likes"])
+        .populate([
+          {
+            path: "author",
+            select: ["id", "username"],
+          },
+          {
+            path: "images.likes",
+          },
+        ]);
 
       return res.json(found);
     } catch (error) {
@@ -108,18 +136,14 @@ let ImageController = {
     }
   },
   getAll: async (req, res) => {
-    let { page, limit, offset } = req.body;
+    let { page, limit } = req.query;
+
+    if (limit === undefined || limit > 10) {
+      limit = 10;
+    }
 
     if (page === undefined) {
-      page = 0;
-    }
-
-    if (limit === undefined || limit > 50) {
-      limit = 50;
-    }
-
-    if (offset === undefined) {
-      offset = 0;
+      page = 1;
     }
 
     try {
@@ -129,7 +153,7 @@ let ImageController = {
           select: ["id", "likes", "author"],
           page: page,
           limit: limit,
-          offset: offset,
+          pagination: true,
 
           populate: [
             {
@@ -141,7 +165,7 @@ let ImageController = {
         }
       );
 
-      res.json(result);
+      res.send(result);
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.NOT_FOUND);
@@ -150,12 +174,11 @@ let ImageController = {
   create: async (req, res) => {
     const file = req.file;
     if (!file) {
-      res.status(StatusCodes.BAD_REQUEST).json("no file provided");
+      res.status(StatusCodes.BAD_REQUEST).send("no file provided");
       return;
     }
 
     if (!file.filename) {
-      console.log(file);
       return;
     }
     try {
@@ -164,13 +187,6 @@ let ImageController = {
         author: req.user.id,
       });
       await newImage.save();
-      /*
-      const user = await UserModel.findById(req.user.id)
-        .select(["id", "username", "admin", "images"])
-        .exec();
-
-      user.images.addToSet(newImage);
-      await user.save();*/
 
       await UserModel.findOneAndUpdate(
         {

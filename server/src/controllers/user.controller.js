@@ -1,4 +1,3 @@
-const { mongoose } = require("mongoose");
 let UserModel = require("../models/user");
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 const passwordHasher = require("../helpers/passwordHasher");
@@ -6,6 +5,38 @@ const jwt = require("jsonwebtoken");
 const jwtHelper = require("../helpers/jwt");
 
 let UserController = {
+  setAvatar: async (req, res) => {
+    const file = req.file;
+
+    if (!file || !file.filename) {
+      res.status(StatusCodes.BAD_REQUEST).json("no file provided");
+      return;
+    }
+
+    if (!req.user || !req.user.id) {
+      res.status(StatusCodes.UNAUTHORIZED).json("not authorized");
+      return;
+    }
+
+    try {
+      await AvatarModel.findOneAndUpdate(
+        {
+          user: req.user.id,
+        },
+
+        {
+          $set: {
+            fileName: file.filename,
+          },
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json("could not change avatar");
+    }
+  },
   login: async (req, res) => {
     const { username, password } = req.body;
 
@@ -106,6 +137,10 @@ let UserController = {
   },
   create: async (req, res) => {
     const { username, password } = req.body;
+    if (!username || !password) {
+      res.status(StatusCodes.BAD_REQUEST).json("missing username or password");
+      return;
+    }
 
     try {
       const found = await UserModel.find({
@@ -138,15 +173,19 @@ let UserController = {
   },
 
   findAllImages: async (req, res) => {
-    const { username } = req.body;
+    let { search } = req.body;
+    if (!search) {
+      search = req.params.id;
+    }
     try {
-      let foundUser = await UserModel.findOne({
-        name: username.toLowerCase(),
-      })
+      let foundUser = await UserModel.findById(search)
+        .select("id username images")
         .populate("images")
         .exec();
       if (!foundUser) {
-        console.error("user not found");
+        res
+          .status(StatusCodes.NOT_FOUND)
+          .send(`could not find user by id ${search}`);
         return;
       }
       res.json(foundUser);
