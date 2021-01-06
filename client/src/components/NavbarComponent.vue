@@ -1,5 +1,5 @@
 <template>
-  <b-navbar id="nav" variant="dark" type="dark" class="navbar-margin">
+  <b-navbar id="nav" variant="dark" type="dark" class="navbar-margin" sticky>
     <b-navbar-brand>Bildenettside</b-navbar-brand>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>

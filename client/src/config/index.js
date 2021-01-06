@@ -1,5 +1,7 @@
 const config = {
-  baseURL: "http://192.168.2.153:1337",
+  baseURL: "http://192.168.0.127:1337",
+
+  imagesPerPage: 15,
 };
 
 config.imagePath = function(id) {

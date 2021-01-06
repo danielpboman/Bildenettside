@@ -4,12 +4,10 @@ import ImagesComponent from "../components/ImagesComponent.vue";
 import LoginComponent from "../components/LoginComponent.vue";
 import RegisterComponent from "../components/RegisterComponent.vue";
 
-
 const routes = [
   { path: "/images", component: ImagesComponent },
   { path: "/login", component: LoginComponent },
   { path: "/register", component: RegisterComponent },
-  
 
   { path: "*", redirect: "/images" },
 ];

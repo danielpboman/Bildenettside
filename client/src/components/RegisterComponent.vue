@@ -1,5 +1,5 @@
 <template>
-  <b-container class="register-padding d-flex justify-content-center">
+  <b-jumbotron header="Register" class="register-padding mx-auto">
     <b-overlay :show="user.registering || !show || user.token != null">
       <b-form @submit="this.onSubmit" @reset="this.onReset">
         <b-form-group id="input-group-1" label="Brukernavn" label-for="input-1">
@@ -38,7 +38,7 @@
         >
       </b-form>
     </b-overlay>
-  </b-container>
+  </b-jumbotron>
 </template>
 
 <script>
@@ -69,9 +69,12 @@ export default {
       evt.preventDefault();
 
       this.$store.dispatch("user/register", JSON.stringify(this.form));
+      this.reset();
     },
     onReset(evt) {
-      evt.preventDefault();
+      this.reset();
+    },
+    reset() {
       this.form.username = "";
       this.form.password = "";
 

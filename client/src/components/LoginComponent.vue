@@ -1,5 +1,5 @@
 <template>
-  <b-jumbotron class="login-padding mx-auto">
+  <b-jumbotron header="Login" class="login-padding mx-auto">
     <b-overlay :show="user.loggingIn || !show || user.token != null">
       <b-form @submit="this.onSubmit" @reset="this.onReset">
         <b-form-group id="input-group-1" label="Brukernavn" label-for="input-1">

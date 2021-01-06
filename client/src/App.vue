@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <navbar-component class="mb-5" />
+    <navbar-component class="" />
     <router-view />
   </b-container>
 </template>

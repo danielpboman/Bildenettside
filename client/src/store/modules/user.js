@@ -20,10 +20,10 @@ const actions = {
       (login) => {
         commit("setLoggingIn", false);
         commit("setUser", login.data);
-        console.log(login.data);
         router.replace("/");
       },
       (error) => {
+        commit("setLoggingIn", false);
         console.error(error);
       }
     );
@@ -34,9 +34,11 @@ const actions = {
   register({ commit }, user) {
     commit("setRegistering", true);
 
-    userService.register(user.username, user.password).then(
+    user = JSON.parse(user);
+    userService.register(user).then(
       (data) => {
         commit("setRegistering", false);
+        console.debug(data);
 
         router.push("/login");
       },

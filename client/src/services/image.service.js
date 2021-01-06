@@ -5,18 +5,21 @@ import axios from "axios";
 export const imageService = {
   createImage,
   likeImage,
+  dislikeImage,
   findImageById,
   getImages,
   getLikesForImage,
 };
 
-function getImages() {
+function getImages(page, limit = 50) {
   return axios({
     method: "get",
     url: `${config.baseURL}/api/images`,
+    params: {
+      page: page,
+      limit: limit,
+    },
   });
-
-  //return axios.get(`${config.baseURL}/api/images`, {}).then(handleResponse);
 }
 
 function getLikesForImage(id) {
@@ -26,6 +29,13 @@ function getLikesForImage(id) {
   });
 }
 
+function dislikeImage(id) {
+  return axios({
+    method: "delete",
+    headers: authHeader(),
+    url: `${config.baseURL}/api/like/${id}`,
+  });
+}
 function likeImage(id) {
   return axios({
     method: "post",
