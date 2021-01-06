@@ -7,6 +7,7 @@ let UserModel = require("../models/user");
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
 const IMAGE_PATH = require("../helpers/config").IMAGE_PATH;
+const { exception } = require("console");
 
 let ImageController = {
   dislikeImage: async (req, res) => {
@@ -91,7 +92,12 @@ let ImageController = {
     }
     try {
       let found = await ImageModel.findById(search).select("fileName");
-
+      if (!found) {
+        res
+          .status(StatusCodes.NOT_FOUND)
+          .send(`Could not find image by id ${search}`);
+        return;
+      }
       res.sendFile(found.fileName, {
         root: path.join("./", IMAGE_PATH),
       });

@@ -83,6 +83,8 @@ const init = (app) => {
         .match(/.(jpeg|jpg|png|gif)$/);
       let mimetype = file.mimetype.match(/(jpeg|jpg|png|gif)$/);
 
+      console.log(mimetype, extname);
+
       if (mimetype && extname) {
         cb(null, true);
       } else {
@@ -92,7 +94,7 @@ const init = (app) => {
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
         console.log(req.baseUrl);
-        if (req.baseUrl == "/avatar") {
+        if (req.path === "/avatar") {
           cb(null, AVATAR_PATH);
           return;
         }
@@ -135,7 +137,7 @@ const init = (app) => {
 
   app.post(
     "/avatar",
-    [jwtHelper.jwtMW, guard.check(["user:upload"], storage.single("file"))],
+    [jwtHelper.jwtMW, guard.check(["user:upload"]), storage.single("file")],
     async (req, res) => {
       if (!req.file) {
         res.status(StatusCodes.BAD_REQUEST).send("no file provided");
@@ -146,12 +148,14 @@ const init = (app) => {
     }
   );
 
-  app.get("/avatar/:id", async (req, res) => {
-    await AvatarController.getByID(req, res);
-  });
+  app.get("/avatar/:type(user|avatar)/:id", async (req, res) => {
+    let type = req.params.type;
 
-  app.get("/avatar", async (req, res) => {
-    await AvatarController.getByUser(req, res);
+    if (type === "user") {
+      await AvatarController.getByUser(req, res);
+    } else {
+      await AvatarController.getByID(req, res);
+    }
   });
 
   db.init();

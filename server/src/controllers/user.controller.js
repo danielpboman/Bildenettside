@@ -1,8 +1,14 @@
 let UserModel = require("../models/user");
-const { ReasonPhrases, StatusCodes } = require("http-status-codes");
+let AvatarModel = require("../models/avatar");
+
 const passwordHasher = require("../helpers/passwordHasher");
-const jwt = require("jsonwebtoken");
 const jwtHelper = require("../helpers/jwt");
+const AVATAR_PATH = require("../helpers/config").AVATAR_PATH;
+
+const path = require("path");
+const fs = require("fs");
+const { ReasonPhrases, StatusCodes } = require("http-status-codes");
+const jwt = require("jsonwebtoken");
 
 let UserController = {
   setAvatar: async (req, res) => {
@@ -19,17 +25,40 @@ let UserController = {
     }
 
     try {
-      await AvatarModel.findOneAndUpdate(
-        {
-          user: req.user.id,
-        },
+      let found = await AvatarModel.findOne({
+        user: req.user.id,
+      }).exec();
 
-        {
-          $set: {
-            fileName: file.filename,
-          },
+      console.log(found);
+
+      if (!found) {
+        found = new AvatarModel({
+          fileName: file.filename,
+          user: req.user.id,
+        });
+        await found.save();
+
+        let user = await UserModel.findById(req.user.id);
+
+        if (!user) {
+          throw "could not find user??";
         }
-      );
+
+        user.avatar = found.id;
+        await user.save();
+      } else {
+        let fileName = path.join(AVATAR_PATH, found.fileName);
+        console.log(fileName);
+
+        fs.rm(fileName, (err) => {
+          console.error(err);
+        });
+
+        found.fileName = file.filename;
+        await found.save();
+      }
+
+      res.status(StatusCodes.OK).send("updated avatar");
     } catch (error) {
       console.error(error);
       res

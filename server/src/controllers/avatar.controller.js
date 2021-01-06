@@ -19,7 +19,7 @@ let AvatarController = {
 
     try {
       let found = await AvatarModel.findOne({
-        user: req.user.id,
+        user: search,
       })
         .select(["id", "user", "fileName"])
         .populate([
@@ -32,10 +32,13 @@ let AvatarController = {
       if (!found) {
         return res
           .status(StatusCodes.NOT_FOUND)
-          .send(`could not find image by id ${search}`);
+          .send(`could not find avatar by id ${search}`);
       }
 
-      return res.json(found);
+      //return res.json(found);
+      res.sendFile(found.fileName, {
+        root: path.join("./", AVATAR_PATH),
+      });
     } catch (error) {
       console.error(error);
       res
@@ -67,7 +70,10 @@ let AvatarController = {
           .send(`could not find image by id ${search}`);
       }
 
-      return res.json(found);
+      //return res.json(found);
+      res.sendFile(found.fileName, {
+        root: path.join("./", AVATAR_PATH),
+      });
     } catch (error) {
       console.error(error);
       res
