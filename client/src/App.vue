@@ -1,18 +1,18 @@
 <template>
-  <b-container>
-    <navbar-component class="" />
-    <router-view />
-  </b-container>
+  <div>test</div>
 </template>
 
 <script>
-import NavbarComponent from "./components/NavbarComponent.vue";
 export default {
   name: "app",
-  components: {
-    NavbarComponent,
-  },
 };
 </script>
 
-<style></style>
+<style>
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+</style>

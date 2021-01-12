@@ -9,7 +9,6 @@ const path = require("path");
 const fs = require("fs");
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
-
 let UserController = {
   setAvatar: async (req, res) => {
     const file = req.file;
@@ -113,6 +112,7 @@ let UserController = {
           id: found._id,
           username: found.username.toLowerCase(),
           scope: scope,
+          avatar: found.avatar,
         },
         jwtHelper.secret,
         {
@@ -126,6 +126,7 @@ let UserController = {
         username: found.username,
         id: found._id,
         scope: scope,
+        avatar: found.avatar,
       });
     } catch (error) {
       console.error(error);
@@ -137,7 +138,7 @@ let UserController = {
   find: async (req, res) => {
     let search = req.body.id;
     if (search === undefined) {
-      search = req.params.id;
+      search = req.query.id;
     }
 
     if (search === undefined) {
@@ -152,11 +153,14 @@ let UserController = {
         {
           _id: search,
         },
-        "id username admin images"
+        "id username admin images avatar"
       )
-        .populate({
-          path: "images",
-        })
+        .populate([
+          {
+            path: "avatar",
+            select: ["id", "user"],
+          },
+        ])
         .exec();
       res.json(found);
     } catch (error) {
@@ -198,13 +202,23 @@ let UserController = {
 
     await user.save();
 
+    const avatar = new AvatarModel({
+      user: user._id,
+      fileName: "default.png",
+    });
+
+    user.avatar = avatar._id;
+
+    await avatar.save();
+    await user.save();
+
     res.status(StatusCodes.OK).json({ id: user._id });
   },
 
   findAllImages: async (req, res) => {
     let { search } = req.body;
     if (!search) {
-      search = req.params.id;
+      search = req.query.id;
     }
     try {
       let foundUser = await UserModel.findById(search)

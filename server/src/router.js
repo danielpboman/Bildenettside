@@ -49,18 +49,18 @@ const init = (app) => {
     await UserController.login(req, res);
   });
 
-  app.get("/user/:id", async (req, res) => {
+  app.get("/user", async (req, res) => {
     await UserController.find(req, res);
   });
 
-  app.get("/posts/:id", async (req, res) => {
+  app.get("/posts", async (req, res) => {
     await UserController.findAllImages(req, res);
   });
 
-  app.get("/i/:id", async (req, res) => {
+  app.get("/i", async (req, res) => {
     await ImageController.serveImage(req, res);
   });
-  app.get("/image/:id", async (req, res) => {
+  app.get("/image", async (req, res) => {
     await ImageController.getById(req, res);
   });
 
@@ -68,11 +68,11 @@ const init = (app) => {
     await ImageController.getAll(req, res);
   });
 
-  app.delete("/like/:id", jwtHelper.jwtMW, async (req, res) => {
+  app.delete("/like", jwtHelper.jwtMW, async (req, res) => {
     await ImageController.dislikeImage(req, res);
   });
 
-  app.post("/like/:id", jwtHelper.jwtMW, async (req, res) => {
+  app.post("/like", jwtHelper.jwtMW, async (req, res) => {
     await ImageController.likeImage(req, res);
   });
 
@@ -148,7 +148,7 @@ const init = (app) => {
     }
   );
 
-  app.get("/avatar/:type(user|avatar)/:id", async (req, res) => {
+  app.get("/avatar/:type(user|id)", async (req, res) => {
     let type = req.params.type;
 
     if (type === "user") {

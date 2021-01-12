@@ -1,15 +1,21 @@
 import VueRouter from "vue-router";
 
+/*
 import ImagesComponent from "../components/ImagesComponent.vue";
 import LoginComponent from "../components/LoginComponent.vue";
 import RegisterComponent from "../components/RegisterComponent.vue";
+*/
 
+import Layout from "../views/layout";
 const routes = [
+  /*
   { path: "/images", component: ImagesComponent },
   { path: "/login", component: LoginComponent },
   { path: "/register", component: RegisterComponent },
+*/
 
-  { path: "*", redirect: "/images" },
+  { path: "/", component: Layout },
+  { path: "*", redirect: "/" },
 ];
 
 const router = new VueRouter({

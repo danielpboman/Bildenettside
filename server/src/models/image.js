@@ -13,6 +13,7 @@ const imageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  uploaded: mongoose.Schema.Types.Date,
 });
 
 imageSchema.plugin(mongoosePaginate);

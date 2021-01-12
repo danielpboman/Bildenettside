@@ -3,6 +3,7 @@ module.exports = {
     // add more generic rulesets here, such as:
     // 'eslint:recommended',
     "plugin:vue/recommended",
+    "prettier/vue",
     "prettier",
   ],
   rules: {

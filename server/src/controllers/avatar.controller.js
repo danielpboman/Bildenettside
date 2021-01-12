@@ -10,7 +10,7 @@ const AVATAR_PATH = require("../helpers/config").AVATAR_PATH;
 
 let AvatarController = {
   getByUser: async (req, res) => {
-    let search = req.params.id;
+    let search = req.query.id;
 
     if (search === undefined || search === "" || search == "") {
       res.status(StatusCodes.BAD_REQUEST).send("no id provided");
@@ -47,7 +47,7 @@ let AvatarController = {
     }
   },
   getByID: async (req, res) => {
-    let search = req.params.id;
+    let search = req.query.id;
 
     if (search === undefined || search === "" || search == "") {
       res.status(StatusCodes.BAD_REQUEST).send("no id provided");

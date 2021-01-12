@@ -7,14 +7,23 @@ let UserModel = require("../models/user");
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
 const IMAGE_PATH = require("../helpers/config").IMAGE_PATH;
-const { exception } = require("console");
 
 let ImageController = {
+  addDatesToAll: async () => {
+    await ImageModel.updateMany(
+      {},
+      {
+        $set: {
+          uploaded: Date.now(),
+        },
+      }
+    );
+  },
   dislikeImage: async (req, res) => {
     let search = req.body.id;
 
     if (search === undefined) {
-      search = req.params.id;
+      search = req.query.id;
     }
     if (search === undefined) {
       res
@@ -37,7 +46,20 @@ let ImageController = {
 
       await image.save();
 
-      res.status(StatusCodes.OK).json(await ImageModel.findById(search).exec());
+      res.status(StatusCodes.OK).json(
+        await ImageModel.findById(search)
+          .select(["id", "author", "likes", "uploaded"])
+          .populate([
+            {
+              path: "author",
+              select: ["id", "username", "avatar", "admin"],
+            },
+            {
+              path: "images.likes",
+            },
+          ])
+          .exec()
+      );
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.BAD_REQUEST).send(ReasonPhrases.BAD_REQUEST);
@@ -48,7 +70,7 @@ let ImageController = {
     let search = req.body.id;
 
     if (search === undefined) {
-      search = req.params.id;
+      search = req.query.id;
     }
     if (search === undefined) {
       res
@@ -72,7 +94,20 @@ let ImageController = {
 
       await image.save();
 
-      res.status(StatusCodes.OK).json(await ImageModel.findById(search).exec());
+      res.status(StatusCodes.OK).json(
+        await ImageModel.findById(search)
+          .select(["id", "author", "likes", "uploaded"])
+          .populate([
+            {
+              path: "author",
+              select: ["id", "username", "avatar", "admin"],
+            },
+            {
+              path: "images.likes",
+            },
+          ])
+          .exec()
+      );
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.BAD_REQUEST).json(ReasonPhrases.BAD_REQUEST);
@@ -82,7 +117,7 @@ let ImageController = {
     let search = req.body.id;
 
     if (search === undefined) {
-      search = req.params.id;
+      search = req.query.id;
     }
     if (search === undefined) {
       res
@@ -112,7 +147,7 @@ let ImageController = {
     let search = req.body.id;
 
     if (search === undefined) {
-      search = req.params.id;
+      search = req.query.id;
     }
     if (search === undefined) {
       res
@@ -122,11 +157,11 @@ let ImageController = {
     }
     try {
       let found = await ImageModel.findById(search)
-        .select(["id", "author", "likes"])
+        .select(["id", "author", "likes", "uploaded"])
         .populate([
           {
             path: "author",
-            select: ["id", "username"],
+            select: ["id", "username", "avatar", "admin"],
           },
           {
             path: "images.likes",
@@ -142,31 +177,51 @@ let ImageController = {
     }
   },
   getAll: async (req, res) => {
-    let { page, limit } = req.query;
+    let { offset, page, limit } = req.query;
 
-    if (limit === undefined || limit > 10) {
-      limit = 10;
+    if (limit === undefined || limit > 50) {
+      limit = 50;
     }
 
-    if (page === undefined) {
-      page = 1;
+    let args = {
+      pagination: true,
+      limit: limit,
+    };
+
+    if (page === undefined && offset === undefined) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send("you need to provide a page number or an offset");
+      return;
+    }
+
+    if (page !== undefined) {
+      args.page = page;
+    } else if (offset !== undefined) {
+      args.offset = offset;
+    } else {
+      console.log(offset, page);
+      res.status(StatusCodes.BAD_REQUEST).send("offset and page are undefined");
+      return;
     }
 
     try {
       const result = await ImageModel.paginate(
         {},
         {
-          select: ["id", "likes", "author"],
-          page: page,
-          limit: limit,
+          select: ["id", "likes", "author", "uploaded"],
+          ...args,
           pagination: true,
+          sort: {
+            uploaded: -1,
+          },
 
           populate: [
             {
               path: "likes",
-              select: "id username",
+              select: "id username avatar admin",
             },
-            { path: "author", select: "id username" },
+            { path: "author", select: "id username avatar admin" },
           ],
         }
       );
@@ -191,6 +246,7 @@ let ImageController = {
       const newImage = new ImageModel({
         fileName: file.filename,
         author: req.user.id,
+        uploaded: Date.now(),
       });
       await newImage.save();
 
@@ -207,10 +263,20 @@ let ImageController = {
         }
       );
 
-      res.status(StatusCodes.OK).json({
-        id: newImage._id,
-        author: newImage.author,
-      });
+      res.status(StatusCodes.OK).json(
+        await ImageModel.findById(newImage._id)
+          .select(["id", "author", "likes", "uploaded"])
+          .populate([
+            {
+              path: "author",
+              select: ["id", "username", "avatar", "admin"],
+            },
+            {
+              path: "images.likes",
+            },
+          ])
+          .exec()
+      );
     } catch (error) {
       console.error(error);
       res
