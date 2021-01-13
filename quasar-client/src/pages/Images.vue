@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-infinite-scroll
-      class="fit row wrap justify-start items-start content-start q-gutter-xl"
+      class="fit row wrap justify-start items-start content-start q-gutter-lg"
       @load="onLoad"
       :offset="250"
     >
@@ -20,13 +20,13 @@ import ImageComponent from "../components/Image";
 export default {
   name: "images",
   components: {
-    ImageComponent
+    ImageComponent,
   },
   computed: {
     config: () => config,
     ...mapState({
-      images: state => state.image.images
-    })
+      images: (state) => state.image.images,
+    }),
   },
 
   created() {
@@ -45,8 +45,8 @@ export default {
         console.log(error);
         done(true);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

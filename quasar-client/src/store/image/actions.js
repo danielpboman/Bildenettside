@@ -69,7 +69,7 @@ export default {
     return new Promise((resolve, reject) => {
       imageService.createImage(file).then(
         data => {
-          Router.push("/images");
+          console.log("createImage data: ", data);
           context.commit(UPDATE_IMAGE, data);
           resolve(data);
         },

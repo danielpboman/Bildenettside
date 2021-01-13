@@ -66,8 +66,10 @@ async function createImage(file) {
 
   post.set("file", file);
 
-  return ky.post(`${config.baseURL}/api/upload`, {
-    headers: { ...authHeader() },
-    body: post
-  });
+  return ky
+    .post(`${config.baseURL}/api/upload`, {
+      headers: { ...authHeader() },
+      body: post
+    })
+    .json();
 }

@@ -1,5 +1,5 @@
 const config = {
-  baseURL: process.env.API_URL || "http://192.168.0.127:1337",
+  baseURL: process.env.API_URL || "http://192.168.0.100:1337",
 
   imagePath: function(id) {
     return `${config.baseURL}/api/i?id=${id}`;

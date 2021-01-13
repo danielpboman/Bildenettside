@@ -3,6 +3,7 @@ import Vuex, { createLogger } from "vuex";
 
 import user from "./user";
 import image from "./image";
+import settings from "./settings";
 
 Vue.use(Vuex);
 
@@ -19,7 +20,8 @@ export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       user,
-      image
+      image,
+      settings
     },
 
     // enable strict mode (adds overhead!)

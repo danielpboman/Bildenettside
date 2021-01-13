@@ -14,5 +14,8 @@ export default {
   submit: "Send inn",
   avatar: "Profilbilde",
   failedRegister: "Denne brukeren eksisterer allerede",
-  backToTop: "Tilbake til begynnelsen"
+  backToTop: "Tilbake til begynnelsen",
+  settings: "Innstillinger",
+  upload: "Nytt bilde",
+  pickFile: "Velg bilde"
 };

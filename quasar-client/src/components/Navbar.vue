@@ -1,13 +1,8 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated class="q-mb-md bg-primary text-white" height-hint="98">
+    <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title>
-          Bildenettside
-        </q-toolbar-title>
-        <div class="q-pr-md">
-          <image-upload v-if="this.user.user !== null" />
-        </div>
+        <q-toolbar-title> Bildenettside </q-toolbar-title>
         <q-tabs align="left">
           <q-route-tab to="/images" :label="$t('images')" />
           <q-route-tab
@@ -15,15 +10,18 @@
             :label="$t('login')"
             v-if="this.user.user === null"
           />
+
           <q-route-tab
             to="/register"
             :label="$t('register')"
             v-if="this.user.user === null"
           />
         </q-tabs>
-        <q-tabs class="q-pl-md">
-          <darkmode-toggle class="q-pl-xs" />
-          <language-switcher class="q-ml-sm" />
+        <q-tabs class="q-ml-xl">
+          <div class="q-pr-md">
+            <image-upload v-if="this.user.user !== null" />
+          </div>
+          <settings />
         </q-tabs>
       </q-toolbar>
 
@@ -66,15 +64,13 @@
 import config from "../services/config";
 
 import { mapState } from "vuex";
-import LanguageSwitcher from "./LanguageSwitcher";
-import DarkmodeToggle from "./DarkmodeToggle";
 import ImageUpload from "./ImageUpload.vue";
+import Settings from "./Settings.vue";
 export default {
   name: "navbar-component",
   components: {
-    LanguageSwitcher,
-    DarkmodeToggle,
-    ImageUpload
+    ImageUpload,
+    Settings,
   },
   computed: {
     ...mapState(["user"]),
@@ -82,7 +78,7 @@ export default {
     config: () => config,
     showScrollButton: () => {
       return null;
-    }
+    },
   },
   methods: {
     scrollUp() {
@@ -93,8 +89,8 @@ export default {
 
       localStorage.setItem("darkMode", this.$q.dark.isActive);
       this.darkMode = this.$q.dark.isActive;
-    }
+    },
   },
-  created() {}
+  created() {},
 };
 </script>

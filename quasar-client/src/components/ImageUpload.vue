@@ -1,8 +1,10 @@
 <template>
-  <label>
-    <input type="file" @change="changeFile" accept="image/*" />
-    <q-icon name="cloud_upload" size="32px" />
-  </label>
+  <q-btn color="purple" icon="cloud_upload" :label="$t('upload')">
+    <q-popup-proxy fit ref="upload_proxy_menu">
+      <q-file v-model="file" :label="$t('pickFile')" use-chips filled />
+      <q-btn :label="$t('submit')" @click="upload" />
+    </q-popup-proxy>
+  </q-btn>
 </template>
 
 <style lang="scss">
@@ -18,64 +20,43 @@ input[type="file"] {
 }
 </style>
 
-<!-- 
-  <q-file
-    bg-color="orange"
-    filled
-    flat
-    v-model="file"
-    :label="$t('imageUpload')"
-    accept="image/*"
-  >
-    <template v-slot:prepend>
-      <q-icon name="cloud_upload" />
-    </template>
-  </q-file>
--->
 <script>
 export default {
   name: "image-upload",
   data() {
     return {
+      uploading: false,
       file: null,
-      uploading: false
     };
   },
   created() {
     this.$q.loadingBar.setDefaults({
       color: "primary",
       size: "3px",
-      position: "bottom"
+      position: "bottom",
     });
   },
-  methods: {
-    changeFile(evt) {
-      let file = evt.target.files[0];
-      if (!file) {
-        return;
-      }
 
-      this.file = file;
-    }
-  },
-  watch: {
-    uploading(uploading) {
-      if (uploading) {
-        this.$q.loadingBar.start(250);
-      } else {
-        this.$q.loadingBar.stop();
-      }
-    },
-    async file(file) {
-      console.log(file);
-      if (!file || this.uploading) {
+  methods: {
+    async upload() {
+      if (!this.file || this.uploading) {
         return;
       }
+      this.$refs.upload_proxy_menu.hide();
 
       this.uploading = true;
       await this.$store.dispatch("image/createImage", file);
       this.uploading = false;
-    }
-  }
+    },
+  },
+  watch: {
+    uploading(uploading) {
+      if (uploading) {
+        this.$q.loadingBar.start(100);
+      } else {
+        this.$q.loadingBar.stop();
+      }
+    },
+  },
 };
 </script>

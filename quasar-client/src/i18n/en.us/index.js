@@ -14,5 +14,8 @@ export default {
   submit: "Submit",
   avatar: "Profile Picture",
   failedRegister: "This user already exists",
-  backToTop: "Back to Top"
+  backToTop: "Back to Top",
+  settings: "Settings",
+  upload: "New Image",
+  pickFile: "Pick Image"
 };

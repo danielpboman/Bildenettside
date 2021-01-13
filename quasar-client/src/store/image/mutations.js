@@ -28,6 +28,7 @@ export default {
   },
   [UPDATE_IMAGE](state, image) {
     let index = state.images.findIndex(x => x._id === image._id);
+    console.log(index);
 
     if (~index) {
       state.images = [
@@ -36,7 +37,9 @@ export default {
         ...state.images.slice(index + 1)
       ];
     } else {
-      state.images = [image, ...state.images.slice(1)];
+      console.log(state.images);
+      state.images.unshift(image);
+      console.log(state.images);
     }
   }
 };

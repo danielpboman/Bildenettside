@@ -1,6 +1,6 @@
 <template>
   <q-select
-    v-model="lang"
+    v-model="language"
     :options="this.options"
     borderless
     emit-value
@@ -17,25 +17,26 @@
 </template>
 
 <script>
+import { SET_OPTION } from "src/store/settings/mutation-types";
+
 import { options } from "../i18n";
+
 export default {
   name: "language-switcher",
   computed: {
-    options: () => options
+    options: () => options,
+    language: {
+      get() {
+        return this.$store.state.settings.options["language"];
+      },
+      set(value) {
+        this.$store.commit(`settings/${SET_OPTION}`, {
+          option: "language",
+          value: value,
+        });
+        this.$i18n.locale = value;
+      },
+    },
   },
-  data() {
-    return {
-      lang: this.$i18n.locale
-    };
-  },
-  created() {
-    this.lang = localStorage.getItem("language") || "nb-no";
-  },
-  watch: {
-    lang(lang) {
-      this.$i18n.locale = lang;
-      localStorage.setItem("language", lang);
-    }
-  }
 };
 </script>

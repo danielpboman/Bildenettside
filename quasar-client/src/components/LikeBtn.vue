@@ -14,6 +14,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { Router } from "../router";
 export default {
   name: "like-btn",
 
@@ -26,6 +27,11 @@ export default {
 
   methods: {
     async toggleLike() {
+      if (!this.$props.userID) {
+        Router.replace("/login");
+        return;
+      }
+
       let isLiked = this.isImageLikedByUser(
         this.$props.userID,
         this.$props.imageID
