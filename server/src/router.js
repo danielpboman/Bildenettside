@@ -13,22 +13,40 @@ const guard = require("express-jwt-permissions")({
 
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
-const mime = require("mime");
-const fs = require("fs");
-const IMAGE_PATH = require("./helpers/config").IMAGE_PATH;
-const AVATAR_PATH = require("./helpers/config").AVATAR_PATH;
 const AvatarController = require("./controllers/avatar.controller");
 
-const init = (app) => {
-  console.log("IMAGE_PATH: " + IMAGE_PATH);
-  console.log("AVATAR_PATH: " + AVATAR_PATH);
-  if (!fs.existsSync(IMAGE_PATH)) {
-    fs.mkdirSync(IMAGE_PATH);
-  }
-  if (!fs.existsSync(AVATAR_PATH)) {
-    fs.mkdirSync(AVATAR_PATH);
-  }
+const cloudinary = require("cloudinary").v2;
 
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+const imageStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: require("./helpers/config").IMAGE_FOLDER,
+      public_id: `${Date.now() + "-" + Math.round(Math.random() * 1e9)}`,
+    };
+  },
+});
+
+const avatarStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: require("./helpers/config").AVATAR_FOLDER,
+      public_id: `${Date.now() + "-" + Math.round(Math.random() * 1e9)}`,
+    };
+  },
+});
+
+const avatar = multer({
+  storage: avatarStorage,
+});
+const image = multer({
+  storage: imageStorage,
+});
+
+const init = (app) => {
   app.use(bodyParser.json());
   app.use(cookieParser());
 
@@ -76,55 +94,15 @@ const init = (app) => {
     await ImageController.likeImage(req, res);
   });
 
-  const storage = multer({
-    fileFilter: (req, file, cb) => {
-      let extname = file.originalname
-        .toLowerCase()
-        .match(/.(jpeg|jpg|png|gif)$/);
-      let mimetype = file.mimetype.match(/(jpeg|jpg|png|gif)$/);
-
-      console.log(mimetype, extname);
-
-      if (mimetype && extname) {
-        cb(null, true);
-      } else {
-        cb(null, false);
-      }
-    },
-    storage: multer.diskStorage({
-      destination: (req, file, cb) => {
-        console.log(req.baseUrl);
-        if (req.path === "/avatar") {
-          cb(null, AVATAR_PATH);
-          return;
-        }
-        cb(null, IMAGE_PATH);
-      },
-
-      filename: async (req, file, cb) => {
-        try {
-          const type = mime.getExtension(file.mimetype);
-
-          cb(
-            null,
-            `${
-              Date.now() +
-              "-" +
-              Math.round(Math.random() * 1e9) +
-              "." +
-              (type && type != "" ? type : "undefined")
-            }`
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      },
-    }),
+  app.post("/upload_test", image.single("file"), async (req, res) => {
+    console.log(req.file);
+    console.log("");
+    console.log(req);
   });
 
   app.post(
     "/upload",
-    [jwtHelper.jwtMW, guard.check(["user:upload"]), storage.single("file")],
+    [jwtHelper.jwtMW, guard.check(["user:upload"]), image.single("file")],
     async (req, res) => {
       if (!req.file) {
         res.status(StatusCodes.BAD_REQUEST).json("no file provided");
@@ -137,7 +115,7 @@ const init = (app) => {
 
   app.post(
     "/avatar",
-    [jwtHelper.jwtMW, guard.check(["user:upload"]), storage.single("file")],
+    [jwtHelper.jwtMW, guard.check(["user:upload"]), avatar.single("file")],
     async (req, res) => {
       if (!req.file) {
         res.status(StatusCodes.BAD_REQUEST).send("no file provided");

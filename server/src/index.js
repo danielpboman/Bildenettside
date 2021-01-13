@@ -4,7 +4,7 @@ const cors = require("cors");
 const router = require("./router");
 
 const port = process.env.PORT || 1337;
-const host = process.env.HOST || "192.168.0.127";
+const host = process.env.HOST || "192.168.0.100";
 
 app.use(cors());
 

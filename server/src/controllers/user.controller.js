@@ -3,12 +3,12 @@ let AvatarModel = require("../models/avatar");
 
 const passwordHasher = require("../helpers/passwordHasher");
 const jwtHelper = require("../helpers/jwt");
-const AVATAR_PATH = require("../helpers/config").AVATAR_PATH;
 
-const path = require("path");
-const fs = require("fs");
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
+
+const cloudinary = require("cloudinary").v2;
+
 let UserController = {
   setAvatar: async (req, res) => {
     const file = req.file;
@@ -46,12 +46,7 @@ let UserController = {
         user.avatar = found.id;
         await user.save();
       } else {
-        let fileName = path.join(AVATAR_PATH, found.fileName);
-        console.log(fileName);
-
-        fs.rm(fileName, (err) => {
-          console.error(err);
-        });
+        await cloudinary.destroy(found.fileName);
 
         found.fileName = file.filename;
         await found.save();

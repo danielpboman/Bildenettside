@@ -1,12 +1,11 @@
-const { mongoose } = require("mongoose");
-const path = require("path");
+"use strict";
 
 let ImageModel = require("../models/image");
 let UserModel = require("../models/user");
 
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
-const IMAGE_PATH = require("../helpers/config").IMAGE_PATH;
+const cloudinary = require("cloudinary").v2;
 
 let ImageController = {
   addDatesToAll: async () => {
@@ -133,9 +132,8 @@ let ImageController = {
           .send(`Could not find image by id ${search}`);
         return;
       }
-      res.sendFile(found.fileName, {
-        root: path.join("./", IMAGE_PATH),
-      });
+
+      res.redirect(301, cloudinary.url(found.fileName));
     } catch (error) {
       console.error(error);
       res
@@ -263,20 +261,20 @@ let ImageController = {
         }
       );
 
-      res.status(StatusCodes.OK).json(
-        await ImageModel.findById(newImage._id)
-          .select(["id", "author", "likes", "uploaded"])
-          .populate([
-            {
-              path: "author",
-              select: ["id", "username", "avatar", "admin"],
-            },
-            {
-              path: "images.likes",
-            },
-          ])
-          .exec()
-      );
+      const response = await ImageModel.findById(newImage._id)
+        .select(["id", "author", "likes", "uploaded"])
+        .populate([
+          {
+            path: "author",
+            select: ["id", "username", "avatar", "admin"],
+          },
+          {
+            path: "images.likes",
+          },
+        ])
+        .exec();
+
+      res.status(StatusCodes.OK).json(response);
     } catch (error) {
       console.error(error);
       res

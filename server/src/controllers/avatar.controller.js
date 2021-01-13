@@ -1,12 +1,8 @@
-const { mongoose } = require("mongoose");
-const path = require("path");
-
-let UserModel = require("../models/user");
 let AvatarModel = require("../models/avatar");
 
-const { ReasonPhrases, StatusCodes } = require("http-status-codes");
+const { StatusCodes } = require("http-status-codes");
 
-const AVATAR_PATH = require("../helpers/config").AVATAR_PATH;
+const cloudinary = require("cloudinary").v2;
 
 let AvatarController = {
   getByUser: async (req, res) => {
@@ -35,10 +31,7 @@ let AvatarController = {
           .send(`could not find avatar by id ${search}`);
       }
 
-      //return res.json(found);
-      res.sendFile(found.fileName, {
-        root: path.join("./", AVATAR_PATH),
-      });
+      res.redirect(301, cloudinary.url(found.fileName));
     } catch (error) {
       console.error(error);
       res
@@ -70,10 +63,7 @@ let AvatarController = {
           .send(`could not find image by id ${search}`);
       }
 
-      //return res.json(found);
-      res.sendFile(found.fileName, {
-        root: path.join("./", AVATAR_PATH),
-      });
+      res.redirect(301, cloudinary.url(found.fileName));
     } catch (error) {
       console.error(error);
       res
