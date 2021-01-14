@@ -3,8 +3,8 @@ const app = express();
 const cors = require("cors");
 const router = require("./router");
 
-const port = process.env.PORT || 1337;
-const host = process.env.HOST || "192.168.0.127";
+const port = process.env.PORT || 8080;
+const host = process.env.HOST || "0.0.0.0";
 
 app.use(cors());
 
