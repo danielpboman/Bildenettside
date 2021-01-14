@@ -6,8 +6,7 @@ export default {
   setAvatar(context, avatar) {
     userService.setAvatar(avatar).then(
       data => {
-        console.log(data);
-        context.commit(SET_AVATAR, data);
+        console.log("avatar", data);
       },
       error => {
         console.error(error);

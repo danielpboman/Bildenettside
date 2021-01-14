@@ -199,7 +199,7 @@ let UserController = {
 
     const avatar = new AvatarModel({
       user: user._id,
-      fileName: "default.png",
+      fileName: "avatars/default.png",
     });
 
     user.avatar = avatar._id;

@@ -1,15 +1,21 @@
 <template>
   <q-card v-if="this.findImageByID(this.$props.imageID) != null">
     <q-img
-      :src="config.imagePath(this.$props.imageID)"
+      :src="config.imagePath(this.$props.fileName)"
       transition="fade"
       style="width: 320px"
       spinner-color="primary"
       spinner-size="82px"
+      @load="setShowImage"
     />
+    <q-skeleton height="260px" square v-if="!showImage" />
 
     <q-card-actions>
-      <like-btn :userID="this.userID" :imageID="this.$props.imageID" />
+      <like-btn
+        :userID="this.userID"
+        :imageID="this.$props.imageID"
+        :fileName="this.$props.fileName"
+      />
     </q-card-actions>
     <q-separator />
 
@@ -17,7 +23,7 @@
       <div class="text-caption">
         {{ this.findImageByID(this.$props.imageID).uploaded.split("T")[0] }}
       </div>
-      <div class="text-caption">{{ $t("uploadedBy") }}</div>
+      <div class="text-overline">{{ $t("uploadedBy") }}</div>
       <user
         :id="this.findImageByID(this.$props.imageID).author._id"
         :avatarID="this.findImageByID(this.$props.imageID).author.avatar"
@@ -56,8 +62,19 @@ export default {
       }
     })
   },
+  methods: {
+    setShowImage() {
+      this.showImage = !this.showImage;
+    }
+  },
   props: {
-    imageID: String
+    imageID: String,
+    fileName: String
+  },
+  data() {
+    return {
+      showImage: false
+    };
   }
 };
 </script>

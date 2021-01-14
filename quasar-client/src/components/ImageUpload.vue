@@ -7,33 +7,20 @@
   </q-btn>
 </template>
 
-<style lang="scss">
-input[type="file"] {
-  display: none;
-}
-
-.file-upload {
-  border: 2px solid #ccc;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-</style>
-
 <script>
 export default {
   name: "image-upload",
   data() {
     return {
       uploading: false,
-      file: null,
+      file: null
     };
   },
   created() {
     this.$q.loadingBar.setDefaults({
       color: "primary",
       size: "3px",
-      position: "bottom",
+      position: "bottom"
     });
   },
 
@@ -45,9 +32,9 @@ export default {
       this.$refs.upload_proxy_menu.hide();
 
       this.uploading = true;
-      await this.$store.dispatch("image/createImage", file);
+      await this.$store.dispatch("image/createImage", this.file);
       this.uploading = false;
-    },
+    }
   },
   watch: {
     uploading(uploading) {
@@ -56,7 +43,7 @@ export default {
       } else {
         this.$q.loadingBar.stop();
       }
-    },
-  },
+    }
+  }
 };
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-infinite-scroll
-      class="fit row wrap justify-start items-start content-start q-gutter-lg"
+      class="fit row wrap justify-center items-start content-start q-gutter-lg"
       @load="onLoad"
       :offset="250"
     >
@@ -9,6 +9,7 @@
         v-for="(img, index) in images"
         :key="index"
         :imageID="img._id"
+        :fileName="img.fileName"
       />
     </q-infinite-scroll>
   </div>
@@ -20,13 +21,13 @@ import ImageComponent from "../components/Image";
 export default {
   name: "images",
   components: {
-    ImageComponent,
+    ImageComponent
   },
   computed: {
     config: () => config,
     ...mapState({
-      images: (state) => state.image.images,
-    }),
+      images: state => state.image.images
+    })
   },
 
   created() {
@@ -45,8 +46,8 @@ export default {
         console.log(error);
         done(true);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

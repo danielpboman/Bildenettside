@@ -94,12 +94,6 @@ const init = (app) => {
     await ImageController.likeImage(req, res);
   });
 
-  app.post("/upload_test", image.single("file"), async (req, res) => {
-    console.log(req.file);
-    console.log("");
-    console.log(req);
-  });
-
   app.post(
     "/upload",
     [jwtHelper.jwtMW, guard.check(["user:upload"]), image.single("file")],
@@ -126,14 +120,14 @@ const init = (app) => {
     }
   );
 
-  app.get("/avatar/:type(user|id)", async (req, res) => {
-    let type = req.params.type;
+  app.get("/avatar", async (req, res) => {
+    /*let type = req.params.type;
 
     if (type === "user") {
       await AvatarController.getByUser(req, res);
-    } else {
-      await AvatarController.getByID(req, res);
-    }
+    } else {*/
+    await AvatarController.getByID(req, res);
+    //}
   });
 
   db.init();

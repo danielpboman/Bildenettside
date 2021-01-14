@@ -3,20 +3,6 @@
     <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title> Bildenettside </q-toolbar-title>
-        <q-tabs align="left">
-          <q-route-tab to="/images" :label="$t('images')" />
-          <q-route-tab
-            to="/login"
-            :label="$t('login')"
-            v-if="this.user.user === null"
-          />
-
-          <q-route-tab
-            to="/register"
-            :label="$t('register')"
-            v-if="this.user.user === null"
-          />
-        </q-tabs>
         <q-tabs class="q-ml-xl">
           <div class="q-pr-md">
             <image-upload v-if="this.user.user !== null" />
@@ -24,6 +10,20 @@
           <settings />
         </q-tabs>
       </q-toolbar>
+      <q-tabs align="left">
+        <q-route-tab to="/images" :label="$t('images')" />
+        <q-route-tab
+          to="/login"
+          :label="$t('login')"
+          v-if="this.user.user === null"
+        />
+
+        <q-route-tab
+          to="/register"
+          :label="$t('register')"
+          v-if="this.user.user === null"
+        />
+      </q-tabs>
 
       <q-tabs align="right" v-if="this.user.user !== null"> </q-tabs>
     </q-header>
@@ -48,14 +48,13 @@
     </q-drawer> 
 -->
     <q-page-container>
-      <transition
+      <!--      <transition
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
-        appear
-        :duration="300"
-      >
-        <router-view />
-      </transition>
+        :duration="100"
+      >-->
+      <router-view />
+      <!--</transition>-->
     </q-page-container>
   </q-layout>
 </template>
@@ -70,7 +69,7 @@ export default {
   name: "navbar-component",
   components: {
     ImageUpload,
-    Settings,
+    Settings
   },
   computed: {
     ...mapState(["user"]),
@@ -78,7 +77,7 @@ export default {
     config: () => config,
     showScrollButton: () => {
       return null;
-    },
+    }
   },
   methods: {
     scrollUp() {
@@ -89,8 +88,8 @@ export default {
 
       localStorage.setItem("darkMode", this.$q.dark.isActive);
       this.darkMode = this.$q.dark.isActive;
-    },
+    }
   },
-  created() {},
+  created() {}
 };
 </script>

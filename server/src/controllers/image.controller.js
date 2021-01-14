@@ -47,7 +47,7 @@ let ImageController = {
 
       res.status(StatusCodes.OK).json(
         await ImageModel.findById(search)
-          .select(["id", "author", "likes", "uploaded"])
+          .select(["id", "author", "likes", "uploaded", "fileName"])
           .populate([
             {
               path: "author",
@@ -132,8 +132,8 @@ let ImageController = {
           .send(`Could not find image by id ${search}`);
         return;
       }
-
-      res.redirect(301, cloudinary.url(found.fileName));
+      let url = cloudinary.url(found.fileName);
+      res.redirect(301, url);
     } catch (error) {
       console.error(error);
       res
@@ -155,7 +155,7 @@ let ImageController = {
     }
     try {
       let found = await ImageModel.findById(search)
-        .select(["id", "author", "likes", "uploaded"])
+        .select(["id", "author", "likes", "uploaded", "fileName"])
         .populate([
           {
             path: "author",
@@ -207,7 +207,7 @@ let ImageController = {
       const result = await ImageModel.paginate(
         {},
         {
-          select: ["id", "likes", "author", "uploaded"],
+          select: ["id", "likes", "author", "uploaded", "fileName"],
           ...args,
           pagination: true,
           sort: {
@@ -262,7 +262,7 @@ let ImageController = {
       );
 
       const response = await ImageModel.findById(newImage._id)
-        .select(["id", "author", "likes", "uploaded"])
+        .select(["id", "author", "likes", "uploaded", "fileName"])
         .populate([
           {
             path: "author",

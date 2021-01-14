@@ -30,8 +30,9 @@ let AvatarController = {
           .status(StatusCodes.NOT_FOUND)
           .send(`could not find avatar by id ${search}`);
       }
+      let url = cloudinary.url(found.fileName);
 
-      res.redirect(301, cloudinary.url(found.fileName));
+      res.redirect(301, url);
     } catch (error) {
       console.error(error);
       res
@@ -48,14 +49,7 @@ let AvatarController = {
     }
 
     try {
-      let found = await AvatarModel.findById(search)
-        .select(["id", "user", "fileName"])
-        .populate([
-          {
-            path: "user",
-            select: ["id", "username"],
-          },
-        ]);
+      let found = await AvatarModel.findById(search).select("fileName");
 
       if (!found) {
         return res
@@ -63,7 +57,8 @@ let AvatarController = {
           .send(`could not find image by id ${search}`);
       }
 
-      res.redirect(301, cloudinary.url(found.fileName));
+      let url = cloudinary.url(found.fileName);
+      res.redirect(301, url);
     } catch (error) {
       console.error(error);
       res
