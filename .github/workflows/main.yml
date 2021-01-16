@@ -31,24 +31,18 @@ jobs:
          id: docker_build_api
          uses: docker/build-push-action@v2
          with:
-           context: ./
+           context: ./server
            file: server/Dockerfile
            push: true
-           builder: ${{ steps.buildx.outputs.name }}
            tags: trybefore/bildenettside:api
-           cache-from: type=local,src=/tmp/.buildx-cache
-           cache-to: type=local,dest=/tmp/.buildx-cache
        - name: Build&Push Client
          id: docker_build_client
          uses: docker/build-push-action@v2
          with:
-           context: ./
-           builder: ${{ steps.buildx.outputs.name }}
+           context: ./quasar-client
            file: quasar-client/Dockerfile
            push: true
            tags: trybefore/bildenettside:client
-           cache-from: type=local,src=/tmp/.buildx-cache
-           cache-to: type=local,dest=/tmp/.buildx-cache
        - name: Image Digests
          run: echo ${{ steps.docker_build_api.outputs.digest }} && echo ${{ steps.docker_build_client.outputs.digest }}   
          
