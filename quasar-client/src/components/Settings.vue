@@ -1,6 +1,10 @@
 <template>
   <div class="q-pa-md">
-    <q-btn color="green" icon="settings" :label="$t('settings')">
+    <q-btn
+      color="green"
+      icon="settings"
+      :label="$q.platform.is.mobile ? '' : $t('settings')"
+    >
       <q-popup-proxy>
         <div class="row no-wrap q-pa-md">
           <div class="column">
