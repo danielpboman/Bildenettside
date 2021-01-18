@@ -1,7 +1,7 @@
 import { Platform } from "quasar";
 
 const config = {
-  baseURL: "https://api.bilder.danielboman.dev",
+  baseURL: "https://bildeapi.danielboman.dev",
   cloudURL: "https://res.cloudinary.com/dt3er7ng3/image/upload"
 };
 
