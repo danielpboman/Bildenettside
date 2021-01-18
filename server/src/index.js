@@ -13,6 +13,14 @@ const api = express.Router();
 router.init(api);
 app.use("/api", api);
 
+
+if (!process.env.HOST) {
+	app.listen(port, () => {
+	  console.log(`Listening on http://localhost:${port}`);
+	});
+	
+	return;
+}
 app.listen(port, host, () => {
   console.log(`Listening on http://${host}:${port}`);
 });
